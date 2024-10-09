@@ -1,7 +1,11 @@
 package com.rld.datingapp.ui.util
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
+import androidx.annotation.OptIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -23,10 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+import com.rld.datingapp.LOGGERTAG
 import com.rld.datingapp.data.User
 
 @SuppressLint("ModifierFactoryExtensionFunction")
@@ -43,7 +51,7 @@ fun maxHeight(frac: Double = 1.0) = Modifier.fillMaxHeight(frac.toFloat())
 
 @Composable fun ErrorText(text: String, modifier: Modifier = Modifier) = Row(
     modifier
-        .background(Color(0xAABD2626))
+        .background(Color(0xAABD2626), RoundedCornerShape(10))
         .padding(5.dp, 2.5.dp)
 ) { Text(text) }
 
@@ -61,16 +69,31 @@ fun maxHeight(frac: Double = 1.0) = Modifier.fillMaxHeight(frac.toFloat())
     Text(label)
 }
 
-@Composable fun ProfileCard(user: User?, modifier: Modifier = Modifier) = Column(
+@OptIn(UnstableApi::class)
+@Composable fun ProfileCard(user: User?, playerContext: Context, show: () -> Boolean, modifier: Modifier = Modifier) = Column(
     modifier
         .fillMaxSize()
-        .background(Color(0xFF9EEFEF), RoundedCornerShape(1.dp)),
+        .background(Color(0xFFDDDDDD), RoundedCornerShape(15))
+        .border(2.dp, Color(0xFFCCCCCC), RoundedCornerShape(15)),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
-    if(user == null) Text("No more matches right now") else {
-        Icon(user.profilePicture!!.asImageBitmap(), "", modifier = maxSize(0.8))
-        VerticalSpacer(25.dp)
+    val player = remember { ExoPlayer.Builder(playerContext).build() }
+    if(user == null) Text("No more matches right now") else if(show()) {
+        AndroidView({ ctx ->
+            PlayerView(ctx).apply {
+                val uri = "http://10.0.2.2:8080/app/api/${user.email}/videotest"
+                val item = MediaItem.fromUri(uri)
+                Log.d(LOGGERTAG, "streaming video from $uri")
+                player.setMediaItem(item)
+                player.prepare()
+                this.player = player
+                this.hideController() //hide control bars.  Uses unstable api.
+                this.controllerHideOnTouch = true
+                player.play()
+            }
+        }, modifier = maxSize(0.9), onRelease = { player.release() })
+        VerticalSpacer(15.dp)
         Text("${user.firstname} ${user.lastname}")
     }
 }

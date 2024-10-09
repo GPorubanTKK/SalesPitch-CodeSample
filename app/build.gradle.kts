@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.rld.datingapp"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -50,6 +50,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayer.dash)
+    implementation(libs.androidx.media3.ui)
     implementation(libs.jakarta.mail)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.okhttp)

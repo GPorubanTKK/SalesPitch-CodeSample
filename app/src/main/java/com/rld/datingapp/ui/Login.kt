@@ -22,6 +22,7 @@ import com.rld.datingapp.data.ViewModel
 import com.rld.datingapp.ui.util.ErrorText
 import com.rld.datingapp.ui.util.HorizontalSpacer
 import com.rld.datingapp.ui.util.LabeledTextField
+import com.rld.datingapp.ui.util.PasswordTextField
 import com.rld.datingapp.ui.util.TextButton
 import com.rld.datingapp.ui.util.VerticalSpacer
 import com.rld.datingapp.ui.util.maxSize
@@ -40,7 +41,7 @@ import kotlinx.coroutines.withContext
         VerticalSpacer(100.dp)
         LabeledTextField({ Text("Username:") }, usernameText, { usernameText = it }, placeHolder = "Username")
         VerticalSpacer(30.dp)
-        LabeledTextField({ Text("Password:") }, passwordText, { passwordText = it }, placeHolder = "Password")
+        PasswordTextField({ Text("Password:") }, passwordText, { passwordText = it }, placeHolder = "Password")
         VerticalSpacer(10.dp)
         if(invalidLogin) {
             ErrorText("Wrong username or password!")

@@ -1,11 +1,13 @@
 package com.rld.datingapp.data
 
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rld.datingapp.ApiController
+import com.rld.datingapp.LOGGERTAG
 import com.rld.datingapp.messaging.WebSocketManager
 import com.rld.datingapp.util.makeSmallNotification
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +46,7 @@ class ViewModel: ViewModel() {
     private val pMessages = MutableLiveData<MutableMap<String, MutableList<Message>>>(mutableMapOf())
     val messages: LiveData<MutableMap<String, MutableList<Message>>> = pMessages
     fun addMessage(from: String, message: Message) = viewModelScope.launch {
-        pMessages.value?.get(from)?.add(message) //update the list
+        pMessages.value!![from]!!.add(message) //update the list
         pMessages.value = pMessages.value //trigger the observer
     }
     fun removeRecipient(person: String) = viewModelScope.launch {
@@ -53,9 +55,14 @@ class ViewModel: ViewModel() {
     }
     private val pMatches = MutableLiveData<MutableList<Match>>(mutableListOf())
     val matches: LiveData<MutableList<Match>> = pMatches
-    fun addMatch(user: Match) = viewModelScope.launch {
+    fun addMatch(user: Match, reference: User) = viewModelScope.launch {
         pMatches.value?.add(user)
+        val key = if(reference.email == user.user1.email) user.user2.email else user.user1.email
+        if(!pMessages.value!!.keys.contains(key))
+            pMessages.value!![key] = mutableListOf()
         pMatches.value = pMatches.value
+        pMessages.value = pMessages.value
+        Log.d(LOGGERTAG, "Added match and message reference. ${pMessages.value}")
     }
 
     fun sendNotification(
@@ -64,6 +71,8 @@ class ViewModel: ViewModel() {
         content: String,
         priority: Int = NotificationCompat.PRIORITY_HIGH
     ) = context.makeSmallNotification(icon, title, content, priority)
+
+    fun verifySocketConnection(password: String): Boolean = webSocketManager.authorizeConnection(password)
 
     companion object {
         lateinit var webSocketManager: WebSocketManager

@@ -1,14 +1,9 @@
 package com.rld.datingapp.messaging
 
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.JsonParser
-import com.google.gson.annotations.Expose
+import com.google.gson.JsonObject
 import com.rld.datingapp.LOGGERTAG
-import com.rld.datingapp.R
-import com.rld.datingapp.data.Match
 import com.rld.datingapp.data.Message
-import com.rld.datingapp.data.User
 import com.rld.datingapp.data.ViewModel
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -17,76 +12,37 @@ import okhttp3.WebSocketListener
 class WebSocketManager(
     private val viewModel: ViewModel
 ): WebSocketListener() {
-    private val gson = Gson()
-        .newBuilder()
-        .excludeFieldsWithoutExposeAnnotation()
-        .create()
-
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
-        viewModel.setConnectionStatus(true)
+        println("Established connection with code ${response.code}")
+        viewModel.setConnectionStatus(response.code == 200)
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         super.onMessage(webSocket, text)
-        val json = JsonParser.parseString(text).asJsonObject
-        try {
-            when(MessageType.valueOf(json["type"].asString)) { //make sure the first letter is capital to work with enum
-                MessageType.Match -> {
-                    val message = gson.fromJson(json, WSMatch::class.java)
-                    val match = message.value
-                    val from = message.from
-                    //update matches from db
-                    viewModel.sendNotification(R.drawable.baseline_notifications_24, "You matched with ${from?.name}! Your have 24h to sell yourself.", "")
-                }
-                MessageType.Message -> {
-                    val message = gson.fromJson(json, WSMessage::class.java)
-                    val sender = message.from
-                    viewModel.addMessage(sender!!.email, message.value!!)
-                    viewModel.sendNotification(R.drawable.baseline_notifications_24, "${sender.name} sent you a message!", message.value.value)
-                }
-                MessageType.System -> {
-                    Log.d(LOGGERTAG, "Got $text")
-                }
-                MessageType.None -> {}
+        val (messageType, _, from, payload) = WebSocketMessage.from(text)
+        when(messageType!!) {
+            MessageType.Identify -> throw IllegalStateException("Client should not receive id messages from server")
+            MessageType.Message -> {
+                viewModel.addMessage(from!!, Message(false, payload!!["content"].asString))
             }
-        } catch(ignored: Exception) {}
+            MessageType.Match -> TODO("Implement match handling with websockets")
+            MessageType.System -> {
+                Log.d(LOGGERTAG, "Received system message from server: $payload")
+            }
+        }
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         super.onClosed(webSocket, code, reason)
+        println("Closed connection.  Code: $code Reason: $reason")
         viewModel.setConnectionStatus(false)
     }
 
-    suspend fun sendMessage(message: Message) = ViewModel.webSocket.send(
-        makeMessage(WSMessage(message))
-    )
-
-    enum class MessageType {
-        Match,
-        Message,
-        System,
-        None
-    }
-
-    abstract class WebSocketTransmission<T>(@Expose open val value: T? = null) {
-        @Expose open val type: MessageType = MessageType.None
-        @Expose val from: User? = null
-    }
-
-    class WSMessage(message: Message) : WebSocketTransmission<Message>(message) {
-        override val type: MessageType = MessageType.Message
-    }
-
-    class WSMatch(match: Match) : WebSocketTransmission<Match>(match) {
-        override val type: MessageType = MessageType.Match
-    }
-
-    private fun makeMessage(message: WSMessage): String {
-        val encoder = Gson()
-            .newBuilder()
-            .excludeFieldsWithoutExposeAnnotation()
-            .create()
-        return encoder.toJson(message, WSMessage::class.java)
+    fun authorizeConnection(id: String, passkey: String): Boolean {
+        try {
+            ViewModel.webSocket.send(IdentityMessage(id, JsonObject().apply { addProperty("password", passkey) }))
+        } catch (ignored: Exception) { return false }
+        return true
     }
 }

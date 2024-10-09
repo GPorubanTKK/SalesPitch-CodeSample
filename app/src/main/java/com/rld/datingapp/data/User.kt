@@ -9,7 +9,6 @@ data class User(
     @Expose val email: String,
     @Expose val phoneNumber: String,
     var profilePicture: Bitmap? = null,
-    val introVideo: String? = null
 ) {
     val name
         get() = "$firstname $lastname"

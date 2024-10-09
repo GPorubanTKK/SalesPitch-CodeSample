@@ -8,6 +8,7 @@ import com.rld.datingapp.data.Match
 import com.rld.datingapp.data.MatchWrapper
 import com.rld.datingapp.data.User
 import com.rld.datingapp.data.ViewModel
+import com.rld.datingapp.data.ViewModel.Companion.controller
 import com.rld.datingapp.util.toByteArray
 import jakarta.mail.internet.MimeMultipart
 import jakarta.mail.util.ByteArrayDataSource
@@ -19,7 +20,6 @@ import org.apache.hc.core5.http.ClassicHttpResponse
 import org.apache.hc.core5.http.ContentType
 import org.apache.hc.core5.http.message.BasicNameValuePair
 import java.io.BufferedInputStream
-import java.io.BufferedReader
 
 class ApiController(private val viewModel: ViewModel) {
     val restEndpoint = "http://10.0.2.2:8080/app/api"
@@ -39,7 +39,14 @@ class ApiController(private val viewModel: ViewModel) {
                     BasicNameValuePair("password", password)
                 ))
             }
-            return client.execute(request) { response -> decodeUser(response) }
+            val user = client.execute(request) { response -> decodeUser(response) }
+            Log.d(LOGGERTAG, "Fetching matches")
+            viewModel.matches.value?.clear()
+            val results = controller.getMatches(user!!)
+            for (result in results) viewModel.addMatch(result, user)
+            Log.d(LOGGERTAG, "Messages: ${viewModel.messages.value}")
+            require(viewModel.verifySocketConnection(password))
+            return user
         } catch (e: Exception) { return null }
     }
 
@@ -118,6 +125,7 @@ class ApiController(private val viewModel: ViewModel) {
             if(response.code != OK) return@execute listOf()
             else {
                 val matchResponse = response.entity.content.bufferedReader().readText()
+                Log.e(LOGGERTAG, "Got: $matchResponse")
                 val wrapper = gson.fromJson(matchResponse, MatchWrapper::class.java)
                 return@execute wrapper.matches
             }
