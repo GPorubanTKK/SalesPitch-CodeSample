@@ -63,7 +63,7 @@ import kotlinx.coroutines.launch
                 HorizontalSpacer(20.dp)
                 TextButton("Confirm") {
                     scope.launch {
-                        codeStatus = if(controller.verifyResetCode(code.toString())) 1 else 2
+                        codeStatus = if(controller.verifyResetCode(usernameText, code.toString())) 1 else 2
                     }
                 }
             }

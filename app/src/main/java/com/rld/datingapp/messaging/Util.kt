@@ -1,9 +1,6 @@
 package com.rld.datingapp.messaging
 
-import com.google.gson.GsonBuilder
+import com.rld.datingapp.util.exposeAwareGson
 import okhttp3.WebSocket
 
-internal fun WebSocket.send(message: WebSocketMessage) {
-    val gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
-    send(gson.toJson(message, message::class.java))
-}
+internal fun WebSocket.send(message: WebSocketMessage) = send(exposeAwareGson().toJson(message, message::class.java))

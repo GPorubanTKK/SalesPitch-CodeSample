@@ -1,26 +1,32 @@
 package com.rld.datingapp.data
 
-import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import com.rld.datingapp.ApiController
-import com.rld.datingapp.LOGGERTAG
 import com.rld.datingapp.messaging.WebSocketManager
-import com.rld.datingapp.util.makeSmallNotification
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
-import com.rld.datingapp.MainActivity.Companion.CONTEXT as context
 
-class ViewModel: ViewModel() {
+@OptIn(SavedStateHandleSaveableApi::class)
+class ViewModel(savedState: SavedStateHandle): ViewModel() {
     init {
-        webSocketManager = WebSocketManager(this)
         controller = ApiController(this)
+        webSocketManager = WebSocketManager(this)
         viewModelScope.launch(Dispatchers.IO) {
             webSocket = okHttpClient.newWebSocket(
                 Request.Builder()
@@ -31,48 +37,27 @@ class ViewModel: ViewModel() {
         }
     }
 
-    private val pConnectionStatus = MutableLiveData(false)
-    val connectionStatus: LiveData<Boolean> = pConnectionStatus
-    fun setConnectionStatus(status: Boolean) = viewModelScope.launch {
-        pConnectionStatus.value = status
-    }
+    var websocketConnectionState: Boolean by savedState.saveable { mutableStateOf(false) }
+    var loggedInUser: User? by savedState.saveable { mutableStateOf<User?>(null) }
+    val matches: MutableList<Match> by savedState.saveable(
+        saver = listSaver(
+            save = { it.map(Match::serialize) },
+            restore = { it.map(Match::deserialize).toMutableStateList() }
+        )
+    ) { mutableStateListOf() }
+    private val pMessages: MutableMap<String, SnapshotStateList<Message>> by mutableStateMapOf()
+    val messages: Map<String, SnapshotStateList<Message>> = pMessages
+    var messageUpdateCounter: Int by mutableIntStateOf(0)
 
-    private val pUser = MutableLiveData<User>()
-    val user: LiveData<User> = pUser
-    fun setUser(user: User) = viewModelScope.launch {
-        pUser.value = user
+    fun verifySocketConnection(password: String): Boolean = webSocketManager.authorizeConnection(loggedInUser!!.email, password)
+    fun addMessage(email: String, msg: Message) {
+        pMessages[email]!!.add(msg)
+        messageUpdateCounter++
     }
-
-    private val pMessages = MutableLiveData<MutableMap<String, MutableList<Message>>>(mutableMapOf())
-    val messages: LiveData<MutableMap<String, MutableList<Message>>> = pMessages
-    fun addMessage(from: String, message: Message) = viewModelScope.launch {
-        pMessages.value!![from]!!.add(message) //update the list
-        pMessages.value = pMessages.value //trigger the observer
+    fun addRecipient(email: String) {
+        pMessages[email] = mutableStateListOf()
+        messageUpdateCounter++
     }
-    fun removeRecipient(person: String) = viewModelScope.launch {
-        pMessages.value?.remove(person)
-        pMessages.value = pMessages.value
-    }
-    private val pMatches = MutableLiveData<MutableList<Match>>(mutableListOf())
-    val matches: LiveData<MutableList<Match>> = pMatches
-    fun addMatch(user: Match, reference: User) = viewModelScope.launch {
-        pMatches.value?.add(user)
-        val key = if(reference.email == user.user1.email) user.user2.email else user.user1.email
-        if(!pMessages.value!!.keys.contains(key))
-            pMessages.value!![key] = mutableListOf()
-        pMatches.value = pMatches.value
-        pMessages.value = pMessages.value
-        Log.d(LOGGERTAG, "Added match and message reference. ${pMessages.value}")
-    }
-
-    fun sendNotification(
-        icon: Int,
-        title: String,
-        content: String,
-        priority: Int = NotificationCompat.PRIORITY_HIGH
-    ) = context.makeSmallNotification(icon, title, content, priority)
-
-    fun verifySocketConnection(password: String): Boolean = webSocketManager.authorizeConnection(password)
 
     companion object {
         lateinit var webSocketManager: WebSocketManager

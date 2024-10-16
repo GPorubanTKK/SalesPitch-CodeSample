@@ -67,10 +67,9 @@ import kotlin.coroutines.suspendCoroutine
                                 .build()
                             val inputImage = InputImage.fromBitmap(image.toBitmap(), image.imageInfo.rotationDegrees)
                             val detector = FaceDetection.getClient(detectorOptions)
-                            val result = detector.process(inputImage)
+                            detector.process(inputImage)
                                 .addOnSuccessListener { onImageDetectFaces(it) }
                                 .addOnFailureListener { Log.e(LOGGERTAG, "MLKit error", it) }
-
                         }
                         override fun onError(exception: ImageCaptureException) {
                             super.onError(exception)

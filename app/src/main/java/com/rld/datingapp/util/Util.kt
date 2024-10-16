@@ -4,6 +4,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.app.NotificationCompat
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.rld.datingapp.CHANNEL_ID
 import java.io.ByteArrayOutputStream
 
@@ -22,15 +24,18 @@ fun Context.makeSmallNotification(
     val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.notify(0, notification)
 }
-
-fun String.formatLines(length: Int = 40): String {
-    val out = mutableListOf<Char>()
-    toList().chunked(length).forEach { out += it; out += '\n' }
-    return out.joinToString { it.toString() }
-}
-
 fun Bitmap.toByteArray(): ByteArray {
     val baos = ByteArrayOutputStream()
     compress(Bitmap.CompressFormat.PNG, 90, baos)
     return baos.toByteArray()
+}
+
+fun exposeAwareGson(): Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
+
+interface Serializable {
+    fun serialize(): String
+}
+
+interface Deserializable<T> {
+    fun deserialize(serialized: String): T
 }

@@ -18,10 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,8 +30,6 @@ import com.rld.datingapp.LOGGERTAG
 import com.rld.datingapp.data.Match
 import com.rld.datingapp.data.Message
 import com.rld.datingapp.data.ViewModel
-import com.rld.datingapp.data.ViewModel.Companion.webSocketManager
-import com.rld.datingapp.util.formatLines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -41,9 +37,7 @@ import kotlinx.coroutines.launch
     modifier = maxSize(),
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
-    val recipient = if(match.user1.email == viewModel.user.value!!.email) match.user2 else match.user1
-    val messages by viewModel.messages.observeAsState()
-    val theseMessages by remember { derivedStateOf { messages!![recipient.email]!! } }
+    val recipient = match.other(viewModel.loggedInUser!!)
     val scope = rememberCoroutineScope()
     Row(maxWidth()) {
         Icon(Icons.AutoMirrored.Filled.ArrowBack, "", Modifier.clickable(onClick = goBack))
@@ -52,17 +46,19 @@ import kotlinx.coroutines.launch
         HorizontalSpacer(10.dp)
         Text(recipient.name)
     }
-    LazyColumn(maxHeight(0.8).fillMaxWidth()) {
-        items(theseMessages) { (sent, message) ->
-            Row(
-                maxWidth()
-                    .padding(horizontal = 2.dp, vertical = 1.dp)
-                    .background(if(sent) Color.LightGray else Color.Cyan),
-                horizontalArrangement = if(sent) Arrangement.Start else Arrangement.End
-            ) {
-                HorizontalSpacer(2.5.dp)
-                Text(message.formatLines(50))
-                HorizontalSpacer(2.5.dp)
+    key(viewModel.messageUpdateCounter) {
+        LazyColumn(maxHeight(0.8).fillMaxWidth()) {
+            items(viewModel.messages[recipient.email]!!) { (sent, message) ->
+                Row(
+                    maxWidth()
+                        .padding(horizontal = 2.dp, vertical = 1.dp)
+                        .background(if (sent) Color.LightGray else Color.Cyan),
+                    horizontalArrangement = if (sent) Arrangement.Start else Arrangement.End
+                ) {
+                    HorizontalSpacer(2.5.dp)
+                    Text(message.formatLines(50))
+                    HorizontalSpacer(2.5.dp)
+                }
             }
         }
     }
@@ -76,7 +72,6 @@ import kotlinx.coroutines.launch
                 Log.d(LOGGERTAG, "Sending $msg")
                 messageToSend = ""
                 viewModel.addMessage(recipient.email, msg)
-                webSocketManager.sendMessage(msg)
             }
         }
     }

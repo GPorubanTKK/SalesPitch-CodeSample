@@ -64,12 +64,11 @@ import kotlinx.coroutines.withContext
                     usernameText = ""
                     passwordText = ""
                     invalidLogin = false
-                    if(response == null) {
-                        invalidLogin = true
-                    }
+                    if(response == null) invalidLogin = true
                     else {
+                        viewModel.loggedInUser = response
                         setNavState(Main)
-                        viewModel.setUser(response)
+
                     }
                 }
             }

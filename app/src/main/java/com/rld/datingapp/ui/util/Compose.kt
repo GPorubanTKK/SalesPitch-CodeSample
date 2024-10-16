@@ -1,7 +1,6 @@
 package com.rld.datingapp.ui.util
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
@@ -70,7 +69,7 @@ fun maxHeight(frac: Double = 1.0) = Modifier.fillMaxHeight(frac.toFloat())
 }
 
 @OptIn(UnstableApi::class)
-@Composable fun ProfileCard(user: User?, playerContext: Context, show: () -> Boolean, modifier: Modifier = Modifier) = Column(
+@Composable fun ProfileCard(user: User?, show: () -> Boolean, modifier: Modifier = Modifier) = Column(
     modifier
         .fillMaxSize()
         .background(Color(0xFFDDDDDD), RoundedCornerShape(15))
@@ -78,22 +77,26 @@ fun maxHeight(frac: Double = 1.0) = Modifier.fillMaxHeight(frac.toFloat())
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
-    val player = remember { ExoPlayer.Builder(playerContext).build() }
+    var player: ExoPlayer? = remember { null }
     if(user == null) Text("No more matches right now") else if(show()) {
         AndroidView({ ctx ->
             PlayerView(ctx).apply {
-                val uri = "http://10.0.2.2:8080/app/api/${user.email}/videotest"
+                player = ExoPlayer.Builder(ctx).build()
+                val uri = "http://10.0.2.2:8080/app/api/${user.email}/video"
                 val item = MediaItem.fromUri(uri)
                 Log.d(LOGGERTAG, "streaming video from $uri")
-                player.setMediaItem(item)
-                player.prepare()
+                player!!.setMediaItem(item)
+                player!!.prepare()
                 this.player = player
                 this.hideController() //hide control bars.  Uses unstable api.
                 this.controllerHideOnTouch = true
-                player.play()
+                player!!.play()
             }
-        }, modifier = maxSize(0.9), onRelease = { player.release() })
+        }, modifier = maxSize(0.9), onRelease = {
+            Log.d(LOGGERTAG, "Released player instance.")
+            player!!.release()
+        })
         VerticalSpacer(15.dp)
-        Text("${user.firstname} ${user.lastname}")
+        Text(user.name)
     }
 }

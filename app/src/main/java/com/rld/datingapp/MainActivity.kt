@@ -8,10 +8,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModelProvider
 import com.rld.datingapp.data.ViewModel
 import com.rld.datingapp.ui.ForgotPassword
 import com.rld.datingapp.ui.Login
@@ -22,10 +22,10 @@ import com.rld.datingapp.ui.util.rememberMutableStateOf
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 class MainActivity : ComponentActivity() {
+    private val viewModel: ViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        CONTEXT = this
-        val viewModel = ViewModelProvider(this)[ViewModel::class.java]
         buildNotificationsChannel()
         requestCameraPermisssion { permission ->
             val preferences = getPreferences(Context.MODE_PRIVATE)
@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
                 apply()
             }
         }
-        //enableEdgeToEdge()
         setContent {
             var navState by rememberMutableStateOf(NavPosition.Login)
             val setNavState = remember { { value: NavPosition -> navState = value } }
@@ -60,11 +59,6 @@ class MainActivity : ComponentActivity() {
         val channel = NotificationChannel(CHANNEL_ID, "SalesPitch", importance)
         val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    companion object {
-        lateinit var CONTEXT: Context
     }
 }
 

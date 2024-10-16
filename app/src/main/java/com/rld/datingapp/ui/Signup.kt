@@ -2,7 +2,6 @@ package com.rld.datingapp.ui
 
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.Image
@@ -143,15 +142,15 @@ import kotlinx.coroutines.launch
                             modifier = maxWidth().fillMaxHeight(0.8f),
                             onImageCaptured = { value: ImageProxy -> imageCapture = value.toBitmap() })
                         { faces ->
-                            imageIsOkay = true
-                            //if(!imageIsOkay) Log.d(LOGGERTAG, "INVALID IMAGE, NO FACES")
+                            imageIsOkay = faces.isNotEmpty()
+                            if(!imageIsOkay) Log.d(LOGGERTAG, "INVALID IMAGE, NO FACES")
                         }
                     else {
                         Image(imageCapture!!.asImageBitmap(), "", maxWidth().fillMaxHeight(0.8f))
                         if(!imageSelected) {
                             VerticalSpacer(5.dp)
                             Row {
-                                IconButton(Icons.Filled.Check) { imageSelected = true }
+                                IconButton(Icons.Filled.Check, enabled = imageIsOkay) { imageSelected = true }
                                 HorizontalSpacer(30.dp)
                                 IconButton(Icons.Filled.Clear) { imageIsOkay = false; imageCapture = null }
                             }
