@@ -1,29 +1,10 @@
 package com.rld.datingapp.util
 
-import android.app.NotificationManager
-import android.content.Context
 import android.graphics.Bitmap
-import androidx.core.app.NotificationCompat
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.rld.datingapp.CHANNEL_ID
 import java.io.ByteArrayOutputStream
 
-fun Context.makeSmallNotification(
-    icon: Int,
-    title: String,
-    content: String,
-    priority: Int = NotificationCompat.PRIORITY_HIGH
-) {
-    val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-        .setSmallIcon(icon)
-        .setContentTitle(title)
-        .setContentText(content)
-        .setPriority(priority)
-        .build()
-    val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    notificationManager.notify(0, notification)
-}
 fun Bitmap.toByteArray(): ByteArray {
     val baos = ByteArrayOutputStream()
     compress(Bitmap.CompressFormat.PNG, 90, baos)
@@ -32,10 +13,32 @@ fun Bitmap.toByteArray(): ByteArray {
 
 fun exposeAwareGson(): Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
 
-interface Serializable {
-    fun serialize(): String
+fun checkSignupParams(
+    firstName: String,
+    lastName: String,
+    password: String,
+    phoneNumber: String,
+    email: String
+): Pair<Boolean, String> {
+    var hasError = firstName.isBlank() || lastName.isBlank()
+    val errorText = mutableListOf<String>()
+    if(!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}$".toRegex())) {
+        hasError = true
+        errorText += "Password must contain a number, a special character, and a capital letter."
+    }
+    if(!phoneNumber.matches("^\\d{3}-\\d{3}-\\d{4}$".toRegex())) {
+        hasError = true
+        errorText += "Please enter a valid phone number."
+    }
+    if(!email.matches("^[a-z0-9]+@[a-z]+\\.[a-z]{2,3}\$".toRegex())) {
+        hasError = true
+        errorText += "Please enter a valid email address."
+    }
+    return hasError to errorText.joinToString("\n-", prefix = "-")
 }
 
-interface Deserializable<T> {
-    fun deserialize(serialized: String): T
+fun String.formatLines(length: Int = 40): String {
+    val out = mutableListOf<Char>()
+    toList().chunked(length).forEach { out += it; out += '\n' }
+    return out.joinToString("") { it.toString() }.trim()
 }

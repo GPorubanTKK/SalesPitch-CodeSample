@@ -74,4 +74,6 @@ class WebSocketManager(
             return true
         } catch (ignored: Exception) { return false }
     }
+
+    private fun WebSocket.send(message: WebSocketMessage) = send(exposeAwareGson().toJson(message, message::class.java))
 }

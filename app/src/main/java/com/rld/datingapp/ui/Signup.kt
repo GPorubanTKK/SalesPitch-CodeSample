@@ -32,17 +32,8 @@ import com.rld.datingapp.LOGGERTAG
 import com.rld.datingapp.NavPosition
 import com.rld.datingapp.NavPosition.Login
 import com.rld.datingapp.data.ViewModel.Companion.controller
-import com.rld.datingapp.ui.util.CameraPreviewScreen
-import com.rld.datingapp.ui.util.ErrorText
-import com.rld.datingapp.ui.util.HorizontalSpacer
-import com.rld.datingapp.ui.util.IconButton
-import com.rld.datingapp.ui.util.LabeledTextField
-import com.rld.datingapp.ui.util.TextButton
-import com.rld.datingapp.ui.util.VerticalSpacer
-import com.rld.datingapp.ui.util.checkSignupParams
-import com.rld.datingapp.ui.util.maxSize
-import com.rld.datingapp.ui.util.maxWidth
-import com.rld.datingapp.ui.util.rememberMutableStateOf
+import com.rld.datingapp.ui.util.*
+import com.rld.datingapp.util.checkSignupParams
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

@@ -18,11 +18,7 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +27,7 @@ import com.rld.datingapp.LOGGERTAG
 import com.rld.datingapp.data.Match
 import com.rld.datingapp.data.Message
 import com.rld.datingapp.data.ViewModel
+import com.rld.datingapp.util.formatLines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
