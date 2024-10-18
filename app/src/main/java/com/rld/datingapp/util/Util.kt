@@ -1,9 +1,11 @@
 package com.rld.datingapp.util
 
 import android.graphics.Bitmap
+import androidx.compose.ui.util.fastRoundToInt
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.io.ByteArrayOutputStream
+import kotlin.math.roundToInt
 
 fun Bitmap.toByteArray(): ByteArray {
     val baos = ByteArrayOutputStream()
@@ -37,8 +39,16 @@ fun checkSignupParams(
     return hasError to errorText.joinToString("\n-", prefix = "-")
 }
 
-fun String.formatLines(length: Int = 40): String {
-    val out = mutableListOf<Char>()
-    toList().chunked(length).forEach { out += it; out += '\n' }
-    return out.joinToString("") { it.toString() }.trim()
+fun String.formatLines(lengthOfLine: Int = 40): String {
+    val wordsIterator = split("[ \n\t]+".toRegex()).iterator()
+    val lines = mutableListOf<String>()
+    while(wordsIterator.hasNext()) {
+        var line = ""
+        try {
+            while(line.length < (lengthOfLine * 0.9).fastRoundToInt() ) line += "${wordsIterator.next()} "
+        } catch (ignored: NoSuchElementException) {}
+        lines += line
+    }
+    return lines.joinToString("\n") { it.trim() }.trim()
 }
+

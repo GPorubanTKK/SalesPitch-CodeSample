@@ -18,7 +18,11 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,7 +60,11 @@ import kotlinx.coroutines.launch
                         .background(if (sent) Color.LightGray else Color.Cyan, RoundedCornerShape(10))
                     ) {
                         HorizontalSpacer(2.5.dp)
-                        Text(message.formatLines(50))
+                        Text(
+                            text = message.formatLines(),
+                            softWrap = true,
+                            minLines = 1
+                        )
                         HorizontalSpacer(2.5.dp)
                     }
                 }

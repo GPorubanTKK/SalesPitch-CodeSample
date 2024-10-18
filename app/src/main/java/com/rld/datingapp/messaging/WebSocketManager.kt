@@ -45,15 +45,7 @@ class WebSocketManager(
             MessageType.Match -> {
                 viewModel.matches += exposeAwareGson().fromJson(payload!!["content"].asString, Match::class.java)
                 viewModel.addRecipient(from!!)
-                runBlocking(Dispatchers.IO) {
-                    async {
-                        with(viewModel.matches) {
-                            clear()
-                            addAll(controller.getMatches(viewModel.loggedInUser!!))
-                        }
-                    }
-                    Unit
-                }
+                //sendNotification(payload!!["message"].asString)
             }
             MessageType.System -> {
                 Log.d(LOGGERTAG, "Received System message: ${payload!!["content"].asString}")
