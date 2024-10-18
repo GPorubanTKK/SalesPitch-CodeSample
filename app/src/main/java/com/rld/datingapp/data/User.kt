@@ -2,8 +2,6 @@ package com.rld.datingapp.data
 
 import android.graphics.Bitmap
 import com.google.gson.annotations.Expose
-import com.rld.datingapp.util.Deserializable
-import com.rld.datingapp.util.Serializable
 import com.rld.datingapp.util.exposeAwareGson
 
 data class User(
