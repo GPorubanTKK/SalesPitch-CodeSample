@@ -39,7 +39,6 @@ import kotlinx.coroutines.launch
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
     val recipient = match.other(viewModel.loggedInUser!!)
-    Log.d(LOGGERTAG, "User: $recipient")
     val scope = rememberCoroutineScope()
     Row(maxWidth()) {
         Icon(Icons.AutoMirrored.Filled.ArrowBack, "", Modifier.clickable(onClick = goBack))

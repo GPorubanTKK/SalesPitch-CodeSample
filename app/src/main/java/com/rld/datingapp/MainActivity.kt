@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
             val setNavState = remember { { value: NavPosition -> navState = value } }
             DatingAppTheme {
                 when(navState) {
-                    NavPosition.Login -> Login(setNavState, viewModel)
+                    NavPosition.Login -> Login(setNavState, viewModel, getPreferences(Context.MODE_PRIVATE))
                     NavPosition.Signup -> Signup(setNavState, getPreferences(Context.MODE_PRIVATE))
                     NavPosition.ForgotPassword -> ForgotPassword(setNavState)
                     NavPosition.Main -> MainApp(viewModel)
