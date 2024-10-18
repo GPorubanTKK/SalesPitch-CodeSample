@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -38,6 +39,7 @@ import kotlinx.coroutines.launch
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
     val recipient = match.other(viewModel.loggedInUser!!)
+    Log.d(LOGGERTAG, "User: $recipient")
     val scope = rememberCoroutineScope()
     Row(maxWidth()) {
         Icon(Icons.AutoMirrored.Filled.ArrowBack, "", Modifier.clickable(onClick = goBack))
@@ -50,14 +52,17 @@ import kotlinx.coroutines.launch
         LazyColumn(maxHeight(0.8).fillMaxWidth()) {
             items(viewModel.messages[recipient.email]!!) { (sent, message) ->
                 Row(
-                    maxWidth()
-                        .padding(horizontal = 2.dp, vertical = 1.dp)
-                        .background(if (sent) Color.LightGray else Color.Cyan),
-                    horizontalArrangement = if (sent) Arrangement.Start else Arrangement.End
+                    maxWidth().padding(horizontal = 2.dp, vertical = 1.dp),
+                    horizontalArrangement = if (sent) Arrangement.End else Arrangement.Start
                 ) {
-                    HorizontalSpacer(2.5.dp)
-                    Text(message.formatLines(50))
-                    HorizontalSpacer(2.5.dp)
+                    Row(Modifier
+                        .padding(horizontal = 2.dp, vertical = 1.dp)
+                        .background(if (sent) Color.LightGray else Color.Cyan, RoundedCornerShape(10))
+                    ) {
+                        HorizontalSpacer(2.5.dp)
+                        Text(message.formatLines(50))
+                        HorizontalSpacer(2.5.dp)
+                    }
                 }
             }
         }

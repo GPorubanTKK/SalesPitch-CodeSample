@@ -39,17 +39,17 @@ class ViewModel(savedState: SavedStateHandle): ViewModel() {
 
     var websocketConnectionState: Boolean by savedState.saveable { mutableStateOf(false) }
     var loggedInUser: User? by savedState.saveable { mutableStateOf<User?>(null) }
-    val matches: MutableList<Match> by savedState.saveable(
+    val matches: SnapshotStateList<Match> by savedState.saveable(
         saver = listSaver(
             save = { it.map(Match::serialize) },
             restore = { it.map(Match::deserialize).toMutableStateList() }
         )
     ) { mutableStateListOf() }
-    private val pMessages: MutableMap<String, SnapshotStateList<Message>> by mutableStateMapOf()
+    private val pMessages: MutableMap<String, SnapshotStateList<Message>> = mutableStateMapOf()
     val messages: Map<String, SnapshotStateList<Message>> = pMessages
     var messageUpdateCounter: Int by mutableIntStateOf(0)
 
-    fun verifySocketConnection(password: String): Boolean = webSocketManager.authorizeConnection(loggedInUser!!.email, password)
+    fun verifySocketConnection(email: String, password: String): Boolean = webSocketManager.authorizeConnection(email, password)
     fun addMessage(email: String, msg: Message) {
         pMessages[email]!!.add(msg)
         messageUpdateCounter++

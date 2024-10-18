@@ -27,5 +27,5 @@ fun checkSignupParams(
 fun String.formatLines(length: Int = 40): String {
     val out = mutableListOf<Char>()
     toList().chunked(length).forEach { out += it; out += '\n' }
-    return out.joinToString { it.toString() }
+    return out.joinToString("") { it.toString() }.trim()
 }

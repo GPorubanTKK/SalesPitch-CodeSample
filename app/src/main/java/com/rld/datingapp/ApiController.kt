@@ -43,9 +43,12 @@ class ApiController(private val viewModel: ViewModel) {
                 clear()
                 addAll(getMatches(user!!))
             }
-            require(viewModel.verifySocketConnection(password))
+            require(viewModel.verifySocketConnection(email, password))
             return user
-        } catch (e: Exception) { return null }
+        } catch (e: Exception) {
+            Log.e(LOGGERTAG, "Exception in login")
+            return null
+        }
     }
 
     suspend fun sendPasswordReset(email: String): Boolean = client.execute(
@@ -141,6 +144,7 @@ class ApiController(private val viewModel: ViewModel) {
                 val matchResponse = response.entity.content.bufferedReader().readText()
                 Log.e(LOGGERTAG, "Got: $matchResponse")
                 val wrapper = gson.fromJson(matchResponse, MatchWrapper::class.java)
+                for (match in wrapper.matches) viewModel.addRecipient(match.other(currentUser).email)
                 return@execute wrapper.matches
             }
         }

@@ -69,6 +69,7 @@ class WebSocketManager(
 
     fun authorizeConnection(id: String, passkey: String): Boolean {
         try {
+            Log.d(LOGGERTAG,"WS: ${ViewModel.webSocket}")
             ViewModel.webSocket.send(IdentityMessage(id, JsonObject().apply { addProperty("password", passkey) }))
             return true
         } catch (ignored: Exception) { return false }
