@@ -1,4 +1,4 @@
-package com.rld.datingapp.ui.util
+package com.rld.datingapp.ui.components
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -31,6 +31,12 @@ import com.rld.datingapp.LOGGERTAG
 import com.rld.datingapp.data.Match
 import com.rld.datingapp.data.Message
 import com.rld.datingapp.data.ViewModel
+import com.rld.datingapp.ui.util.HorizontalSpacer
+import com.rld.datingapp.ui.util.VerticalSpacer
+import com.rld.datingapp.ui.util.maxHeight
+import com.rld.datingapp.ui.util.maxSize
+import com.rld.datingapp.ui.util.maxWidth
+import com.rld.datingapp.ui.util.rememberMutableStateOf
 import com.rld.datingapp.util.formatLines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,15 +61,16 @@ import kotlinx.coroutines.launch
                     maxWidth().padding(horizontal = 2.dp, vertical = 1.dp),
                     horizontalArrangement = if (sent) Arrangement.End else Arrangement.Start
                 ) {
-                    Row(Modifier
+                    Row(modifier = Modifier
                         .padding(horizontal = 2.dp, vertical = 1.dp)
-                        .background(if (sent) Color.LightGray else Color.Cyan, RoundedCornerShape(10))
+                        .background(if (sent) Color.LightGray else Color.Cyan, RoundedCornerShape(10)),
                     ) {
                         HorizontalSpacer(2.5.dp)
                         Text(
                             text = message.formatLines(),
                             softWrap = true,
-                            minLines = 1
+                            minLines = 1,
+                            maxLines = 100
                         )
                         HorizontalSpacer(2.5.dp)
                     }
@@ -73,7 +80,7 @@ import kotlinx.coroutines.launch
     }
     Row(maxWidth(0.9)) {
         var messageToSend by rememberMutableStateOf("")
-        TextField(messageToSend, { messageToSend = it }, placeholder = { Text("Message") })
+        TextField(messageToSend, { if(it.length < 2000) messageToSend = it }, placeholder = { Text("Message") })
         HorizontalSpacer(5.dp)
         IconButton(Icons.AutoMirrored.Filled.Send, enabled = messageToSend.isNotBlank()) {
             scope.launch(Dispatchers.IO) {

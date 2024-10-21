@@ -1,4 +1,4 @@
-package com.rld.datingapp.ui.util
+package com.rld.datingapp.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardOptions

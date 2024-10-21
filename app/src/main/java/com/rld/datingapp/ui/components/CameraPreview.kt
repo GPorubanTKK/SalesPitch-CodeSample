@@ -1,4 +1,4 @@
-package com.rld.datingapp.ui.util
+package com.rld.datingapp.ui.components
 
 import android.content.Context
 import android.util.Log

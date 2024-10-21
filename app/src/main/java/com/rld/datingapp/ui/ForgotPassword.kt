@@ -20,9 +20,9 @@ import com.rld.datingapp.NavPosition.Login
 import com.rld.datingapp.data.ViewModel.Companion.controller
 import com.rld.datingapp.ui.util.ErrorText
 import com.rld.datingapp.ui.util.HorizontalSpacer
-import com.rld.datingapp.ui.util.LabeledTextField
-import com.rld.datingapp.ui.util.NumberTextField
-import com.rld.datingapp.ui.util.TextButton
+import com.rld.datingapp.ui.components.LabeledTextField
+import com.rld.datingapp.ui.components.NumberTextField
+import com.rld.datingapp.ui.components.TextButton
 import com.rld.datingapp.ui.util.VerticalSpacer
 import com.rld.datingapp.ui.util.maxSize
 import com.rld.datingapp.ui.util.maxWidth

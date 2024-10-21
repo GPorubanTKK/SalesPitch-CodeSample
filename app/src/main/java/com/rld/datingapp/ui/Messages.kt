@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.rld.datingapp.data.Match
 import com.rld.datingapp.data.ViewModel
 import com.rld.datingapp.ui.util.HorizontalSpacer
-import com.rld.datingapp.ui.util.MessageDialog
+import com.rld.datingapp.ui.components.MessageDialog
 import com.rld.datingapp.ui.util.VerticalSpacer
 import com.rld.datingapp.ui.util.maxSize
 import com.rld.datingapp.ui.util.maxWidth

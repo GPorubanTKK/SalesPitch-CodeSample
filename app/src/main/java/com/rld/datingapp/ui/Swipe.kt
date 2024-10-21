@@ -21,7 +21,7 @@ import com.rld.datingapp.LOGGERTAG
 import com.rld.datingapp.data.User
 import com.rld.datingapp.data.ViewModel
 import com.rld.datingapp.data.ViewModel.Companion.controller
-import com.rld.datingapp.ui.util.ProfileCard
+import com.rld.datingapp.ui.components.ProfileCard
 import com.rld.datingapp.ui.util.VerticalSpacer
 import com.rld.datingapp.ui.util.maxSize
 import com.rld.datingapp.ui.util.maxWidth

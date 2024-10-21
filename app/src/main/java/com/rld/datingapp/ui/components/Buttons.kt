@@ -1,4 +1,4 @@
-package com.rld.datingapp.ui.util
+package com.rld.datingapp.ui.components
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
