@@ -42,12 +42,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable fun MessageDialog(viewModel: ViewModel, match: Match, goBack: () -> Unit) = Column(
-    modifier = maxSize(),
+    modifier = Modifier.maxSize(),
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
     val recipient = match.other(viewModel.loggedInUser!!)
     val scope = rememberCoroutineScope()
-    Row(maxWidth()) {
+    Row(Modifier.maxWidth()) {
         Icon(Icons.AutoMirrored.Filled.ArrowBack, "", Modifier.clickable(onClick = goBack))
         HorizontalSpacer(25.dp)
         Icon(Icons.Default.AccountBox, "")
@@ -55,10 +55,10 @@ import kotlinx.coroutines.launch
         Text(recipient.name)
     }
     key(viewModel.messageUpdateCounter) {
-        LazyColumn(maxHeight(0.8).fillMaxWidth()) {
+        LazyColumn(Modifier.maxHeight(0.8f).maxWidth()) {
             items(viewModel.messages[recipient.email]!!) { (sent, message) ->
                 Row(
-                    maxWidth().padding(horizontal = 2.dp, vertical = 1.dp),
+                    Modifier.maxWidth().padding(horizontal = 2.dp, vertical = 1.dp),
                     horizontalArrangement = if (sent) Arrangement.End else Arrangement.Start
                 ) {
                     Row(modifier = Modifier
@@ -78,7 +78,7 @@ import kotlinx.coroutines.launch
             }
         }
     }
-    Row(maxWidth(0.9)) {
+    Row(Modifier.maxWidth(0.9f)) {
         var messageToSend by rememberMutableStateOf("")
         TextField(messageToSend, { if(it.length < 2000) messageToSend = it }, placeholder = { Text("Message") })
         HorizontalSpacer(5.dp)

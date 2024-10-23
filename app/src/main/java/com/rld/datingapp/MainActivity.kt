@@ -35,8 +35,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         setContent {
-            var navState by rememberMutableStateOf(NavPosition.Login)
-            val setNavState = remember { { value: NavPosition -> navState = value } }
+            val (navState, setNavState) = rememberMutableStateOf(NavPosition.Login)
             DatingAppTheme {
                 when(navState) {
                     NavPosition.Login -> Login(setNavState, viewModel, getPreferences(Context.MODE_PRIVATE))

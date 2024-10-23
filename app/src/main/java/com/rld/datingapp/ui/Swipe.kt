@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,6 +11,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alexstyl.swipeablecard.Direction
 import com.alexstyl.swipeablecard.ExperimentalSwipeableCardApi
@@ -24,7 +24,6 @@ import com.rld.datingapp.data.ViewModel.Companion.controller
 import com.rld.datingapp.ui.components.ProfileCard
 import com.rld.datingapp.ui.util.VerticalSpacer
 import com.rld.datingapp.ui.util.maxSize
-import com.rld.datingapp.ui.util.maxWidth
 import com.rld.datingapp.ui.util.rememberMutableStateOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,20 +31,20 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalSwipeableCardApi::class)
 @Composable
 fun Swipe(viewModel: ViewModel) = Column(
-    modifier = maxSize(),
+    modifier = Modifier.maxSize(),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center
 ) {
     val usersToShow = remember { mutableStateListOf<User?>() }
     val states = usersToShow.reversed().map { it to rememberSwipeableCardState() }
     var fetching by rememberMutableStateOf(false)
-    Box(modifier = maxWidth(0.8).fillMaxHeight(0.8f).align(Alignment.CenterHorizontally)) {
+    Box(modifier = Modifier.maxSize(0.8f).align(Alignment.CenterHorizontally)) {
         for((profile, state) in states) {
             if(profile != null) {
                 ProfileCard(
                     profile,
                     { profile == usersToShow[0] },
-                    modifier = maxSize().swipableCard(
+                    modifier = Modifier.maxSize().swipableCard(
                         state,
                         onSwiped = {},
                         onSwipeCancel = {},

@@ -46,7 +46,7 @@ fun ProfileCard(user: User?, show: () -> Boolean, modifier: Modifier = Modifier)
                 Log.d(LOGGERTAG, "streaming video from $uri")
                 this.player = ExoPlayer.Builder(ctx).build().apply {
                     setMediaItem(MediaItem.fromUri(uri))
-                    resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+                    resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
                     prepare()
                     player = this
                 }
@@ -54,7 +54,7 @@ fun ProfileCard(user: User?, show: () -> Boolean, modifier: Modifier = Modifier)
                 this.controllerHideOnTouch = true
                 (this.player as ExoPlayer).play()
             }
-        }, modifier = maxSize(0.9), onRelease = {
+        }, modifier = Modifier.maxSize(0.9f), onRelease = {
             Log.d(LOGGERTAG, "Released player instance.")
             player?.release()
         })

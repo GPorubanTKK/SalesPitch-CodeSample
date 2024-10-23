@@ -36,13 +36,18 @@ import com.rld.datingapp.ui.components.CameraPreviewScreen
 import com.rld.datingapp.ui.components.IconButton
 import com.rld.datingapp.ui.components.LabeledTextField
 import com.rld.datingapp.ui.components.TextButton
-import com.rld.datingapp.ui.util.*
+import com.rld.datingapp.ui.util.ErrorText
+import com.rld.datingapp.ui.util.HorizontalSpacer
+import com.rld.datingapp.ui.util.VerticalSpacer
+import com.rld.datingapp.ui.util.maxSize
+import com.rld.datingapp.ui.util.maxWidth
+import com.rld.datingapp.ui.util.rememberMutableStateOf
 import com.rld.datingapp.util.checkSignupParams
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable fun Signup(setNavState: (NavPosition) -> Unit, sharedPreference: SharedPreferences) {
-    Column(maxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(Modifier.maxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         val scope = rememberCoroutineScope()
         var firstNameText by rememberMutableStateOf("")
         var lastNameText by rememberMutableStateOf("")
@@ -53,7 +58,7 @@ import kotlinx.coroutines.launch
         var phoneNumberText by rememberMutableStateOf("")
         var firstStage by rememberMutableStateOf(true)
         VerticalSpacer(40.dp)
-        Row(maxWidth(), horizontalArrangement = Arrangement.Start) {
+        Row(Modifier.maxWidth(), horizontalArrangement = Arrangement.Start) {
             HorizontalSpacer(15.dp)
             Icon(Icons.AutoMirrored.Filled.ArrowBack, "", modifier = Modifier.clickable {
                 if(firstStage) setNavState(Login) else firstStage = true
@@ -134,14 +139,14 @@ import kotlinx.coroutines.launch
                     var imageSelected by rememberMutableStateOf(false)
                     if(imageCapture == null)
                         CameraPreviewScreen(
-                            modifier = maxWidth().fillMaxHeight(0.8f),
+                            modifier = Modifier.maxWidth().fillMaxHeight(0.8f),
                             onImageCaptured = { value: ImageProxy -> imageCapture = value.toBitmap() })
                         { faces ->
                             imageIsOkay = faces.isNotEmpty()
                             if(!imageIsOkay) Log.d(LOGGERTAG, "INVALID IMAGE, NO FACES")
                         }
                     else {
-                        Image(imageCapture!!.asImageBitmap(), "", maxWidth().fillMaxHeight(0.8f))
+                        Image(imageCapture!!.asImageBitmap(), "", Modifier.maxWidth().fillMaxHeight(0.8f))
                         if(!imageSelected) {
                             VerticalSpacer(5.dp)
                             Row {

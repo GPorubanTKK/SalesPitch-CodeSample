@@ -36,16 +36,16 @@ import kotlinx.coroutines.launch
     var code by rememberMutableStateOf(0)
     var codeStatus by rememberMutableStateOf(0)
 
-    Column(maxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(Modifier.maxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         VerticalSpacer(40.dp)
-        Row(maxWidth(), horizontalArrangement = Arrangement.Start) {
+        Row(Modifier.maxWidth(), horizontalArrangement = Arrangement.Start) {
             HorizontalSpacer(15.dp)
             Icon(Icons.AutoMirrored.Filled.ArrowBack, "", modifier = Modifier.clickable {
                 setNavState(Login)
             })
         }
         VerticalSpacer(15.dp)
-        Row(maxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.Bottom) {
+        Row(Modifier.maxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.Bottom) {
             LabeledTextField({ Text("Username") }, usernameText, { usernameText = it })
             HorizontalSpacer(20.dp)
             TextButton("Go!") {
@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
         if(showPopup) {
             Text("We've sent a code to the email associated with the account $usernameText.\nThis code will expire in 30 minutes")
             VerticalSpacer(30.dp)
-            Row(maxWidth(), horizontalArrangement = Arrangement.Center) {
+            Row(Modifier.maxWidth(), horizontalArrangement = Arrangement.Center) {
                 NumberTextField(code, { code = it }, placeHolder = "Code")
                 HorizontalSpacer(20.dp)
                 TextButton("Confirm") {

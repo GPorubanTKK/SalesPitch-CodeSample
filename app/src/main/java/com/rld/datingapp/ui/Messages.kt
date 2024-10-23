@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.rld.datingapp.data.Match
 import com.rld.datingapp.data.ViewModel
@@ -20,19 +21,19 @@ import com.rld.datingapp.ui.util.maxSize
 import com.rld.datingapp.ui.util.maxWidth
 import com.rld.datingapp.ui.util.rememberMutableStateOf
 
-@Composable fun Messages(viewModel: ViewModel) = Column(modifier = maxSize()) {
+@Composable fun Messages(viewModel: ViewModel) = Column(modifier = Modifier.maxSize()) {
     val (openDialog, setOpenDialog) = rememberMutableStateOf<Match?>(null)
     VerticalSpacer(40.dp)
     if(openDialog == null) {
-        Row(maxWidth()) {
+        Row(Modifier.maxWidth()) {
             Text("Messages")
         }
         VerticalSpacer(3.dp)
-        LazyColumn(maxSize()) {
+        LazyColumn(Modifier.maxSize()) {
             items(viewModel.matches) { match ->
                 val matchedUser = match.other(viewModel.loggedInUser!!)
                 Row(
-                    maxWidth().clickable {
+                    Modifier.maxWidth().clickable {
                         setOpenDialog(match)
                     }
                 ) {

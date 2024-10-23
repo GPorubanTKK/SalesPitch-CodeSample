@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.rld.datingapp.data.ViewModel
@@ -29,7 +30,7 @@ fun MainApp(viewModel: ViewModel) {
     Scaffold(
         bottomBar = {
             Row(
-                modifier = maxWidth().padding(top = 5.dp, bottom = 20.dp),
+                modifier = Modifier.maxWidth().padding(top = 5.dp, bottom = 20.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 HorizontalSpacer(50.dp)
@@ -44,7 +45,7 @@ fun MainApp(viewModel: ViewModel) {
             }
         }
     ) {
-        Column(modifier = maxSize().padding(horizontal = 10.dp)) {
+        Column(modifier = Modifier.maxSize().padding(horizontal = 10.dp)) {
             when(navState) {
                 NavItem.Swipe -> Swipe(viewModel)
                 NavItem.Messages -> Messages(viewModel)
@@ -71,3 +72,4 @@ enum class NavItem(
         Icons.Default.Settings
     ),
 }
+

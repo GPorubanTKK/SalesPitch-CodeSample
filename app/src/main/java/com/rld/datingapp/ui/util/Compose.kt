@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 fun Modifier.maxSize(frac: Float = 1f) = fillMaxSize(frac)
-fun Modifier.masWidth(frac: Float = 1f) =  fillMaxWidth(frac)
+fun Modifier.maxWidth(frac: Float = 1f) =  fillMaxWidth(frac)
 fun Modifier.maxHeight(frac: Float = 1f) = fillMaxHeight(frac)
 
 @Composable fun VerticalSpacer(size: Dp, modifier: Modifier = Modifier) = Spacer(modifier.height(size))

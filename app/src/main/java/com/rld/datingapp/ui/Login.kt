@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
         putString("password", passwordText)
         apply()
     }
-    Column(modifier = maxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier.maxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         VerticalSpacer(100.dp)
         LabeledTextField({ Text("Username:") }, usernameText, { usernameText = it }, placeHolder = "Username")
         VerticalSpacer(30.dp)
@@ -60,7 +60,7 @@ import kotlinx.coroutines.launch
             textDecoration = TextDecoration.Underline
         )
         VerticalSpacer(20.dp)
-        Row(modifier = maxWidth(), horizontalArrangement = Arrangement.Center) {
+        Row(modifier = Modifier.maxWidth(), horizontalArrangement = Arrangement.Center) {
             TextButton("Sign up") { setNavState(Signup) }
             HorizontalSpacer(50.dp)
             TextButton("Login", enabled = !isLoggingIn) {
@@ -80,7 +80,7 @@ import kotlinx.coroutines.launch
             }
         }
         LaunchedEffect(Unit) {
-            if(usernameText.isNotBlank() && passwordText.isNotBlank()) {
+            if(usernameText.isNotBlank() && passwordText.isNotBlank() && !invalidLogin) {
                 isLoggingIn = true
                 val response = controller.attemptLogin(usernameText, passwordText)
                 usernameText = ""

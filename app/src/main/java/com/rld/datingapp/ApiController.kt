@@ -1,13 +1,13 @@
 package com.rld.datingapp
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.rld.datingapp.data.Match
 import com.rld.datingapp.data.MatchWrapper
 import com.rld.datingapp.data.User
 import com.rld.datingapp.data.ViewModel
 import com.rld.datingapp.util.exposeAwareGson
+import com.rld.datingapp.util.toBitmap
 import com.rld.datingapp.util.toByteArray
 import jakarta.mail.internet.MimeMultipart
 import jakarta.mail.util.ByteArrayDataSource
@@ -132,7 +132,7 @@ class ApiController(private val viewModel: ViewModel) {
         return client.execute(request) { response -> response.code == HTTP_OK }
     }
 
-    suspend fun getMatches(currentUser: User): List<Match> {
+    private suspend fun getMatches(currentUser: User): List<Match> {
         val request = HttpPost("$restEndpoint/matches").apply {
             entity = UrlEncodedFormEntity(listOf(
                 BasicNameValuePair("email", currentUser.email)
@@ -162,7 +162,8 @@ class ApiController(private val viewModel: ViewModel) {
             multiPart.getBodyPart(0).content as String,
             User::class.java
         )
-        user.profilePicture = BitmapFactory.decodeStream(multiPart.getBodyPart(1).inputStream)
+        val stream = multiPart.getBodyPart(1).inputStream
+        user.profilePicture = stream.readBytes().toBitmap().also { stream.close() }
         return user
     }
 

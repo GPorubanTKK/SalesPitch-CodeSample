@@ -21,11 +21,11 @@ import com.rld.datingapp.ui.util.VerticalSpacer
 import com.rld.datingapp.ui.util.maxSize
 import com.rld.datingapp.ui.util.maxWidth
 
-@Composable fun Settings(viewModel: ViewModel) = Column(modifier = maxSize().padding(10.dp)) {
+@Composable fun Settings(viewModel: ViewModel) = Column(modifier = Modifier.maxSize().padding(10.dp)) {
     VerticalSpacer(40.dp)
-    Row(maxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.maxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            viewModel.loggedInUser!!.profilePicture?.asImageBitmap()!!,
+            viewModel.loggedInUser!!.profilePicture!!.asImageBitmap(),
             "",
             modifier = Modifier.size(50.dp, 50.dp).border(0.dp, Color(0x00000000), CircleShape)
         )
