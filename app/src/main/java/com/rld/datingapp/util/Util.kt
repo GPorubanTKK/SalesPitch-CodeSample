@@ -3,6 +3,7 @@ package com.rld.datingapp.util
 import androidx.compose.ui.util.fastRoundToInt
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlin.reflect.KProperty
 
 fun exposeAwareGson(): Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
 
@@ -43,3 +44,33 @@ fun String.formatLines(lengthOfLine: Int = 40): String {
     return lines.joinToString("\n") { it.trim() }.trim()
 }
 
+/**
+ * Represents a nonnull value that can only be set once. This is useful for properties that cannot be initialized at construction,
+ * but for security should not be fully mutable. This will not prevent access to items if the class is used to wrap a collection.
+ *
+ *  @author Gedeon Poruban
+ * */
+class OnceSetValue<T: Any> {
+    private var value: T? = null
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = value!!
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) =
+        if(this.value == null) this.value = value else throw IllegalAccessException("Value has already been set")
+}
+
+enum class MimeTypes(val value: String) {
+    APPLICATION_JSON("application/json"),
+    APPLICATION_PLAINTEXT("text/plain;charset=UTF-8"),
+    APPLICATION_BINARY("application/octet-stream"),
+    APPLICATION_HTML("text/html"),
+    MEDIA_MP3("audio/mpeg"),
+    MEDIA_MP4("video/mp4"),
+    MEDIA_JPEG("image/jpeg"),
+    MEDIA_PNG("image/png")
+}
+
+const val HTTP_OK = 200
+
+const val SERVER_ADDR = "http://10.0.2.2:8080/app/api"
+//const val SERVER_ADDR = "http://10.23.102.199:8080/app/api"
+
+infix fun <A, B, C>  Pair<A, B>.too(other: C): Triple<A, B, C> = Triple(first, second, other)

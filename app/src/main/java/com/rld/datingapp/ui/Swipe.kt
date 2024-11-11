@@ -42,6 +42,7 @@ fun Swipe(viewModel: ViewModel) = Column(
         for((profile, state) in states) {
             if(profile != null) {
                 ProfileCard(
+                    viewModel.loggedInUser!!,
                     profile,
                     { profile == usersToShow[0] },
                     modifier = Modifier.maxSize().swipableCard(
@@ -83,7 +84,7 @@ fun Swipe(viewModel: ViewModel) = Column(
         }
     }
     LaunchedEffect(fetching) {
-        withContext(Dispatchers.IO) { while(usersToShow.size < 2 && fetching) usersToShow += controller.getNextUser() }
+        withContext(Dispatchers.IO) { while(usersToShow.size < 2 && fetching) usersToShow += controller.getNextUser(viewModel.loggedInUser!!) }
         fetching = false
     }
     LaunchedEffect(Unit) { fetching = true }

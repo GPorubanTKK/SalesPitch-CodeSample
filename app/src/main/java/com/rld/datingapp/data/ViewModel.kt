@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import com.rld.datingapp.ApiController
 import com.rld.datingapp.messaging.WebSocketManager
+import com.rld.datingapp.util.OnceSetValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -48,10 +49,10 @@ class ViewModel(savedState: SavedStateHandle): ViewModel() {
     private val pMessages: MutableMap<String, SnapshotStateList<Message>> = mutableStateMapOf()
     val messages: Map<String, SnapshotStateList<Message>> = pMessages
     var messageUpdateCounter: Int by mutableIntStateOf(0)
-
     fun verifySocketConnection(email: String, password: String): Boolean = webSocketManager.authorizeConnection(email, password)
     fun addMessage(email: String, msg: Message) {
         pMessages[email]!!.add(msg)
+        webSocketManager.sendMessage(msg)
         messageUpdateCounter++
     }
     fun addRecipient(email: String) {
@@ -60,9 +61,9 @@ class ViewModel(savedState: SavedStateHandle): ViewModel() {
     }
 
     companion object {
-        lateinit var webSocketManager: WebSocketManager
-        lateinit var webSocket: WebSocket
-        lateinit var controller: ApiController
+        var webSocketManager: WebSocketManager by OnceSetValue()
+        var webSocket: WebSocket by OnceSetValue()
+        var controller: ApiController by OnceSetValue()
         val okHttpClient = OkHttpClient()
     }
 }

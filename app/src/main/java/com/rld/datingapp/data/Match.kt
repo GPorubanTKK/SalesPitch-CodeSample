@@ -5,7 +5,8 @@ import com.rld.datingapp.util.exposeAwareGson
 
 data class Match(
     @Expose val user1: User,
-    @Expose val user2: User
+    @Expose val user2: User,
+    @Expose val accepted: Boolean
 ): Serializable {
     override fun serialize(): String = exposeAwareGson().toJson(this, Match::class.java)
     fun other(loggedIn: User): User = if(loggedIn.email == user1.email) user2 else user1

@@ -33,7 +33,7 @@ import com.rld.datingapp.ui.util.rememberMutableStateOf
             items(viewModel.matches) { match ->
                 val matchedUser = match.other(viewModel.loggedInUser!!)
                 Row(
-                    Modifier.maxWidth().clickable {
+                    Modifier.maxWidth().clickable(match.accepted) {
                         setOpenDialog(match)
                     }
                 ) {
@@ -41,6 +41,8 @@ import com.rld.datingapp.ui.util.rememberMutableStateOf
                     HorizontalSpacer(10.dp)
                     Column {
                         Text(matchedUser.name)
+                        VerticalSpacer(0.5.dp)
+                        Text(if(match.accepted) "Accepted" else "Pending...")
                     }
                 }
             }

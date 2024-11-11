@@ -27,10 +27,11 @@ import com.rld.datingapp.data.User
 import com.rld.datingapp.ui.util.VerticalSpacer
 import com.rld.datingapp.ui.util.maxSize
 import com.rld.datingapp.ui.util.rememberMutableStateOf
+import com.rld.datingapp.util.SERVER_ADDR
 
 @OptIn(UnstableApi::class)
 @Composable
-fun ProfileCard(user: User?, show: () -> Boolean, modifier: Modifier = Modifier) = Column(
+fun ProfileCard(requester: User, user: User?, show: () -> Boolean, modifier: Modifier = Modifier) = Column(
     modifier
         .fillMaxSize()
         .background(Color(0xFFDDDDDD), RoundedCornerShape(15))
@@ -42,7 +43,7 @@ fun ProfileCard(user: User?, show: () -> Boolean, modifier: Modifier = Modifier)
         var player: ExoPlayer? by rememberMutableStateOf(null)
         AndroidView({ ctx ->
             PlayerView(ctx).apply {
-                val uri = "http://10.0.2.2:8080/app/api/${user.email}/video"
+                val uri = "$SERVER_ADDR/matchmake/getuservideo/{${requester.email}}/{${user.email}}"
                 Log.d(LOGGERTAG, "streaming video from $uri")
                 this.player = ExoPlayer.Builder(ctx).build().apply {
                     setMediaItem(MediaItem.fromUri(uri))

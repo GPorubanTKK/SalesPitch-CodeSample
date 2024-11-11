@@ -18,11 +18,10 @@ import androidx.compose.ui.unit.dp
 import com.rld.datingapp.NavPosition
 import com.rld.datingapp.NavPosition.Login
 import com.rld.datingapp.data.ViewModel.Companion.controller
+import com.rld.datingapp.ui.components.LabeledTextField
+import com.rld.datingapp.ui.components.TextButton
 import com.rld.datingapp.ui.util.ErrorText
 import com.rld.datingapp.ui.util.HorizontalSpacer
-import com.rld.datingapp.ui.components.LabeledTextField
-import com.rld.datingapp.ui.components.NumberTextField
-import com.rld.datingapp.ui.components.TextButton
 import com.rld.datingapp.ui.util.VerticalSpacer
 import com.rld.datingapp.ui.util.maxSize
 import com.rld.datingapp.ui.util.maxWidth
@@ -33,7 +32,7 @@ import kotlinx.coroutines.launch
     val scope = rememberCoroutineScope()
     var usernameText by rememberMutableStateOf("")
     var showPopup by rememberMutableStateOf(false)
-    var code by rememberMutableStateOf(0)
+    var code by rememberMutableStateOf("")
     var codeStatus by rememberMutableStateOf(0)
 
     Column(Modifier.maxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -59,11 +58,11 @@ import kotlinx.coroutines.launch
             Text("We've sent a code to the email associated with the account $usernameText.\nThis code will expire in 30 minutes")
             VerticalSpacer(30.dp)
             Row(Modifier.maxWidth(), horizontalArrangement = Arrangement.Center) {
-                NumberTextField(code, { code = it }, placeHolder = "Code")
+                LabeledTextField({ Text(code) }, code, { code = it }, placeHolder = "Code")
                 HorizontalSpacer(20.dp)
                 TextButton("Confirm") {
                     scope.launch {
-                        codeStatus = if(controller.verifyResetCode(usernameText, code.toString())) 1 else 2
+                        codeStatus = if(controller.verifyResetCode(usernameText, code)) 1 else 2
                     }
                 }
             }
@@ -81,7 +80,7 @@ import kotlinx.coroutines.launch
                     TextButton("Reset") {
                         scope.launch {
                             resetError = newPassword != confirmNewPassword
-                            resetError = controller.resetPassword(usernameText, code.toString(), newPassword)
+                            resetError = controller.resetPassword(usernameText, code, newPassword)
                             if(!resetError) setNavState(Login)
                         }
                     }
