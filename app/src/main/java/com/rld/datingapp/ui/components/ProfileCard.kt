@@ -43,7 +43,7 @@ fun ProfileCard(requester: User, user: User?, show: () -> Boolean, modifier: Mod
         var player: ExoPlayer? by rememberMutableStateOf(null)
         AndroidView({ ctx ->
             PlayerView(ctx).apply {
-                val uri = "$SERVER_ADDR/matchmake/getuservideo/{${requester.email}}/{${user.email}}"
+                val uri = "$SERVER_ADDR/matchmake/getuservideo/${requester.email}/${user.email}"
                 Log.d(LOGGERTAG, "streaming video from $uri")
                 this.player = ExoPlayer.Builder(ctx).build().apply {
                     setMediaItem(MediaItem.fromUri(uri))

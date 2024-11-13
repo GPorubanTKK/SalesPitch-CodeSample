@@ -1,6 +1,7 @@
 package com.rld.datingapp
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.rld.datingapp.data.Match
 import com.rld.datingapp.data.MatchWrapper
 import com.rld.datingapp.data.User
@@ -33,9 +34,14 @@ class ApiController(private val viewModel: ViewModel) {
                 "email" to email,
                 "password" to password
             ))
-            require(code == HTTP_OK && viewModel.verifySocketConnection(email, password))
+            require(code == HTTP_OK) { "HTTP Request Failed for email $email and password $password" }
+            require(viewModel.verifySocketConnection(email, password)) { "Websocket verification failed." }
             unpackToUser(userParts)
-        } catch (e: Exception) { null }
+        } catch (e: Exception) {
+            Log.d(LOGGERTAG, "Error in login")
+            e.printStackTrace()
+            null
+        }
     }
 
     suspend fun attemptMakeAccount(
@@ -108,14 +114,17 @@ class ApiController(private val viewModel: ViewModel) {
                 "email" to currentUser.email,
                 "index" to getNextTracker.toString()
             ))
-            require(code == HTTP_OK)
+            require(code == HTTP_OK) { "HTTP REQUEST FAILED in getNextUser()" }
             getNextTracker++
             unpackToUser(userParts)
-        } catch (e: Exception) { null }
+        } catch (e: Exception) {
+            Log.d(LOGGERTAG, e.stackTraceToString())
+            null
+        }
     }
 
     private fun unpackToUser(multipart: MimeMultipart): User {
-        require(multipart.count == 2)
+        require(multipart.count == 2) { "Invalid number of request parts" }
         val user = with(multipart.getBodyPart(0)) {
             exposeAwareGson().fromJson(content as String, User::class.java)
         }
@@ -141,7 +150,7 @@ class ApiController(private val viewModel: ViewModel) {
     private fun HttpClient.multipartPost(endpoint: String, entity: List<TextPart> = listOf()): Pair<Int, MimeMultipart> {
         val req = HttpPost("$SERVER_ADDR/$endpoint").setEntity(entity)
         return execute(req) { response ->
-            val datasource = ByteArrayDataSource(response.entity.content, MimeTypes.APPLICATION_BINARY.value)
+            val datasource = ByteArrayDataSource(response.entity.content, response.getHeader("Content-Type").value)
             return@execute response.code to MimeMultipart(datasource)
         }
     }
@@ -174,7 +183,7 @@ class ApiController(private val viewModel: ViewModel) {
     ): Pair<Int, MimeMultipart> {
         val req = HttpPost("$SERVER_ADDR/$endpoint").setEntity(text, binary)
         return execute(req) { response ->
-            val datasource = ByteArrayDataSource(response.entity.content, MimeTypes.APPLICATION_BINARY.value)
+            val datasource = ByteArrayDataSource(response.entity.content, response.getHeader("Content-Type").value)
             return@execute response.code to MimeMultipart(datasource)
         }
     }

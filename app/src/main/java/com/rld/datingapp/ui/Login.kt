@@ -86,9 +86,15 @@ import kotlinx.coroutines.launch
                 usernameText = ""
                 passwordText = ""
                 invalidLogin = false
-                if(response == null) invalidLogin = true
+                if(response == null) {
+                    invalidLogin = true
+                    isLoggingIn = false
+                }
                 else {
                     viewModel.loggedInUser = response
+                    val matches = controller.getMatches(viewModel.loggedInUser!!)
+                    viewModel.matches.addAll(matches)
+                    for(match in matches) if(match.accepted) viewModel.addRecipient(match.other(viewModel.loggedInUser!!).email)
                     loadPrefs()
                     setNavState(Main)
                 }
